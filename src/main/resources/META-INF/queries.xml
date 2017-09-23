@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd" version="2.1">
+
+	<named-query name="Produto.todos">
+        <query>SELECT p FROM Produto p</query> 
+    </named-query>
+    
+    <named-query name="Avaliacao.issuesAcima3Votos">
+        <query>
+        	SELECT a FROM Avaliacao a 
+        	JOIN TREAT (a.itensAvaliacao as Issue) i 
+        	WHERE i.quantidadeDeVotos > 3
+        </query> 
+    </named-query>
+    
+    <named-query name="Produto.qtdeDebitosTecnicos">
+        <query>
+        	SELECT COUNT(d) FROM Avaliacao a 
+        	JOIN a.produto p
+        	JOIN TREAT (a.itensAvaliacao as DebitoTecnico) d 
+        	WHERE p.id = :pProdutoId GROUP BY d.status
+        </query> 
+    </named-query>
+    
+    <named-native-query name="Departamento.maiorQtdeAvaliacoes" result-class="br.edu.uni7.persistence.Departamento">
+    	<query>
+    		SELECT COUNT(A.*), D.NOME FROM TBL_DEPARTAMENTOS D 
+    		JOIN TBL_PRODUTOS P ON D.PK_DPT = P.FK_DPT 
+    		JOIN TBL_AVALIACOES A ON A.FK_PROD = P.PK_PROD
+    		GROUP BY COUNT(A.*)
+    	</query>
+    </named-native-query>
+</entity-mappings>
